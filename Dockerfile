@@ -24,8 +24,8 @@ RUN cargo chef cook --recipe-path recipe.json --release --zigbuild \
 COPY . .
 RUN cargo zigbuild -r --target x86_64-unknown-linux-musl --target aarch64-unknown-linux-musl && \
   mkdir /app/linux && \
-  cp target/aarch64-unknown-linux-musl/release/jellyfin-rpc-cli /app/linux/arm64 && \
-  cp target/x86_64-unknown-linux-musl/release/jellyfin-rpc-cli /app/linux/amd64
+  cp target/aarch64-unknown-linux-musl/release/jellyfin-rpc /app/linux/arm64 && \
+  cp target/x86_64-unknown-linux-musl/release/jellyfin-rpc /app/linux/amd64
  
 # (5) this staged will be emulated as was before
 # TARGETPLATFORM usage to copy right binary from builder stage
@@ -33,6 +33,6 @@ RUN cargo zigbuild -r --target x86_64-unknown-linux-musl --target aarch64-unknow
 FROM alpine:latest AS runtime
 WORKDIR /app
 ARG TARGETPLATFORM
-COPY --from=builder /app/${TARGETPLATFORM} /app/jellyfin-rpc-cli
-ENTRYPOINT ["/app/jellyfin-rpc-cli"]
+COPY --from=builder /app/${TARGETPLATFORM} /app/jellyfin-rpc
+ENTRYPOINT ["/app/jellyfin-rpc"]
 CMD ["-c", "/app/config.json"]
